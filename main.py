@@ -1,5 +1,4 @@
-Python 3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)] on win32
-Enter "help" below or click "Help" above for more information.
+# -*- coding: utf-8 -*-
 import os
 import psycopg2
 import random
@@ -34,7 +33,7 @@ link TEXT
 )
 """)
 
-ads = ["🔥 Promote here!", "🚀 Grow fast!", "💰 Advertise now!"]
+ads = ["ðﾟﾔﾥ Promote here!", "ðﾟﾚﾀ Grow fast!", "ðﾟﾒﾰ Advertise now!"]
 
 def get_user(uid):
     c.execute("SELECT * FROM users WHERE id=%s", (uid,))
@@ -49,7 +48,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
     if not get_user(uid):
         add_user(uid)
-    await update.message.reply_text("Welcome to HDeep Views Exchange Bot 🚀")
+    await update.message.reply_text("Welcome to HDeep Views Exchange Bot ðﾟﾚﾀ")
 
 async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = get_user(update.effective_user.id)
