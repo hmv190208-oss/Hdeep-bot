@@ -6,7 +6,6 @@ import psycopg2
 from psycopg2.pool import SimpleConnectionPool
 import telegram
 from telegram import Update
-from telegram.ext import Application, CommandHandler
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,7 +17,7 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 DATABASE_URL = os.environ.get("DATABASE_URL")
 PORT = int(os.environ.get("PORT", 8080))
 
-print(f"🚀 Starting main.py - PORT: {PORT}")
+print(f"🚀 Starting main.py - Python 3.11 - PORT: {PORT}")
 
 # Database
 pool = None
@@ -36,7 +35,7 @@ if DATABASE_URL:
 else:
     print("❌ NO DATABASE_URL")
 
-# Bot instance (sync)
+# Bot instance
 bot = telegram.Bot(BOT_TOKEN) if BOT_TOKEN else None
 
 def get_db():
@@ -61,7 +60,6 @@ def create_table():
     put_db(conn)
     print("✅ Table created")
 
-# SYNC handlers (no async!)
 def handle_start(message):
     try:
         user_id = message.from_user.id
@@ -93,23 +91,20 @@ def handle_balance(message):
 
 @app.route('/')
 def home():
-    return "🤖 Bot LIVE!"
+    return "🤖 Bot LIVE! Python 3.11"
 
 @app.route('/health')
 def health():
-    return jsonify({"status": "ok", "db": pool is not None})
+    return jsonify({"status": "ok", "db": pool is not None, "python": "3.11"})
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    """SIMPLEST WEBHOOK - NO ASYNC"""
     try:
         data = request.get_json()
         update = telegram.Update.de_json(data, bot)
         
-        if update.message:
+        if update and update.message:
             text = update.message.text or ""
-            chat_id = update.message.chat.id
-            
             if text == '/start':
                 handle_start(update.message)
             elif text == '/balance':
@@ -121,8 +116,6 @@ def webhook():
         return "ERROR", 500
 
 if __name__ == '__main__':
-    if pool:
-        create_table()
-    
+    create_table()
     print("🚀 Flask starting...")
     app.run(host='0.0.0.0', port=PORT, debug=False)
